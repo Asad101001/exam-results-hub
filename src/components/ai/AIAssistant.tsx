@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ExamResult } from '@/types/exam';
+import { ExamResult, OOPS_QUESTIONS, TOTAL_EXAM_MARKS, TOTAL_SEMESTER_MARKS } from '@/types/exam';
 import { useAISettings } from '@/hooks/useAISettings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ export function AIAssistant({ result, onClose }: AIAssistantProps) {
       const greeting: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: `Hello! I'm your AI study assistant. I can see your exam results for ${result.examName}. You scored ${result.percentage}% overall with a grade of ${result.grade}. How can I help you understand your results or provide study tips?`,
+        content: `Hello! I'm your AI study assistant. I can see your ${result.subject} exam results. You scored ${result.percentage}% overall with a grade of ${result.grade}. How can I help you understand your results or provide study tips?`,
       };
       setMessages([greeting]);
     }
@@ -44,27 +44,34 @@ export function AIAssistant({ result, onClose }: AIAssistantProps) {
   }, [messages]);
 
   const buildSystemPrompt = () => {
-    const subjectDetails = result.subjects
-      .map((s) => `${s.name}: ${s.marksObtained}/${s.maxMarks} (${((s.marksObtained / s.maxMarks) * 100).toFixed(1)}%)`)
+    const questionDetails = result.questions
+      .map((q, i) => {
+        const topic = OOPS_QUESTIONS[i]?.topic || '';
+        return `Q${q.questionNumber} (${topic}): ${q.marksObtained}/${q.maxMarks} (${((q.marksObtained / q.maxMarks) * 100).toFixed(1)}%)`;
+      })
       .join('\n');
 
-    return `You are a helpful, encouraging educational AI assistant analyzing exam results for a student.
+    return `You are a helpful, encouraging educational AI assistant analyzing OOPs (Object Oriented Programming) exam results for a student.
 
 Student's Exam Results:
 - Name: ${result.studentName}
+- Subject: ${result.subject}
 - Exam: ${result.examName}
 - Date: ${result.examDate}
-- Total Score: ${result.totalMarks}/${result.maxTotalMarks} (${result.percentage}%)
+- Exam Score: ${result.examMarks}/${TOTAL_EXAM_MARKS}
+- Semester Score: ${result.semesterMarks}/${TOTAL_SEMESTER_MARKS} (${result.percentage}%)
 - Grade: ${result.grade}
 ${result.rank ? `- Rank: #${result.rank}` : ''}
 
-Subject-wise Performance:
-${subjectDetails}
+Question-wise Performance:
+${questionDetails}
+
+Teacher: ${result.teacher.name} (${result.teacher.designation || result.teacher.department})
 
 Your role:
-1. Provide constructive feedback on their performance
-2. Identify areas of strength and improvement
-3. Offer specific, actionable study tips
+1. Provide constructive feedback on their OOPs performance
+2. Identify areas of strength and improvement based on question topics
+3. Offer specific, actionable study tips for OOP concepts
 4. Be encouraging and supportive
 5. Answer questions about their results
 
@@ -313,7 +320,7 @@ function AISettingsPanel({ onClose, onComplete }: AISettingsPanelProps) {
             </select>
           </div>
 
-          <Button onClick={handleSave} className="w-full gradient-primary">
+          <Button onClick={handleSave} className="w-full gradient-primary text-primary-foreground">
             Save & Continue
           </Button>
         </CardContent>

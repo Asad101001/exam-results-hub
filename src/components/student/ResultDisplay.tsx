@@ -1,10 +1,10 @@
-import { ExamResult } from '@/types/exam';
+import { ExamResult, TOTAL_EXAM_MARKS, TOTAL_SEMESTER_MARKS, OOPS_QUESTIONS } from '@/types/exam';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GradeDisplay } from '@/components/ui/GradeDisplay';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Award, TrendingUp, ArrowLeft, Sparkles } from 'lucide-react';
+import { CalendarDays, Award, TrendingUp, ArrowLeft, Sparkles, User, BookOpen, Mail, Building } from 'lucide-react';
 
 interface ResultDisplayProps {
   result: ExamResult;
@@ -13,6 +13,8 @@ interface ResultDisplayProps {
 }
 
 export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
+  const examPercentage = (result.examMarks / TOTAL_EXAM_MARKS) * 100;
+
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in">
       {/* Header */}
@@ -41,6 +43,9 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
           </div>
           <h3 className="text-xl font-semibold mt-4">{result.studentName}</h3>
           <p className="text-sm opacity-80">{result.examName}</p>
+          <Badge variant="secondary" className="mt-2 bg-primary-foreground/20 text-primary-foreground border-0">
+            {result.subject}
+          </Badge>
         </div>
         <CardContent className="p-6">
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -56,7 +61,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
             )}
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
-              <span>{result.totalMarks}/{result.maxTotalMarks} marks</span>
+              <span>{result.semesterMarks}/{TOTAL_SEMESTER_MARKS} semester marks</span>
             </div>
           </div>
         </CardContent>
@@ -67,7 +72,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
         <Card className="shadow-md">
           <CardContent className="p-6 flex flex-col items-center justify-center">
             <ProgressRing percentage={result.percentage} size={140} />
-            <p className="mt-4 text-sm text-muted-foreground">Overall Performance</p>
+            <p className="mt-4 text-sm text-muted-foreground">Semester Performance</p>
           </CardContent>
         </Card>
 
@@ -76,8 +81,12 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
             <h4 className="font-semibold text-lg mb-4">Performance Summary</h4>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Total Score</span>
-                <span className="font-semibold">{result.totalMarks} / {result.maxTotalMarks}</span>
+                <span className="text-muted-foreground">Exam Score</span>
+                <span className="font-semibold">{result.examMarks} / {TOTAL_EXAM_MARKS}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Semester Score</span>
+                <span className="font-semibold">{result.semesterMarks} / {TOTAL_SEMESTER_MARKS}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Percentage</span>
@@ -98,35 +107,102 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
         </Card>
       </div>
 
-      {/* Subject-wise Results */}
+      {/* Question-wise Results */}
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle className="text-lg">Subject-wise Results</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            Question-wise Breakdown
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {result.subjects.map((subject, index) => {
-              const subjectPercentage = (subject.marksObtained / subject.maxMarks) * 100;
+            {result.questions.map((question, index) => {
+              const questionPercentage = (question.marksObtained / question.maxMarks) * 100;
+              const topic = OOPS_QUESTIONS[index]?.topic || '';
               return (
                 <div key={index} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <GradeDisplay grade={subject.grade || 'N/A'} size="sm" />
-                      <span className="font-medium">{subject.name}</span>
+                      <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
+                        Q{question.questionNumber}
+                      </span>
+                      <div>
+                        <span className="font-medium">Question {question.questionNumber}</span>
+                        {topic && <p className="text-xs text-muted-foreground">{topic}</p>}
+                      </div>
                     </div>
                     <span className="text-sm font-mono">
-                      {subject.marksObtained} / {subject.maxMarks}
+                      {question.marksObtained} / {question.maxMarks}
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full gradient-primary rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${subjectPercentage}%` }}
+                      style={{ width: `${questionPercentage}%` }}
                     />
                   </div>
                 </div>
               );
             })}
+          </div>
+          <div className="mt-6 pt-4 border-t flex justify-between items-center">
+            <span className="font-medium">Total Exam Marks</span>
+            <span className="text-lg font-bold">{result.examMarks} / {TOTAL_EXAM_MARKS}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Teacher Information */}
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <User className="w-5 h-5" />
+            Examiner Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-muted rounded-lg">
+                <User className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Name</p>
+                <p className="font-medium">{result.teacher.name}</p>
+              </div>
+            </div>
+            {result.teacher.designation && (
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-muted rounded-lg">
+                  <Award className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Designation</p>
+                  <p className="font-medium">{result.teacher.designation}</p>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-muted rounded-lg">
+                <Building className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Department</p>
+                <p className="font-medium">{result.teacher.department}</p>
+              </div>
+            </div>
+            {result.teacher.email && (
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-muted rounded-lg">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Email</p>
+                  <p className="font-medium">{result.teacher.email}</p>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
