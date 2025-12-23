@@ -45,9 +45,8 @@ export function AIAssistant({ result, onClose }: AIAssistantProps) {
 
   const buildSystemPrompt = () => {
     const questionDetails = result.questions
-      .map((q, i) => {
-        const topic = OOPS_QUESTIONS[i]?.topic || '';
-        return `Q${q.questionNumber} (${topic}): ${q.marksObtained}/${q.maxMarks} (${((q.marksObtained / q.maxMarks) * 100).toFixed(1)}%)`;
+      .map((q) => {
+        return `Q${q.questionNumber}: ${q.marksObtained}/${q.maxMarks} (${((q.marksObtained / q.maxMarks) * 100).toFixed(1)}%)`;
       })
       .join('\n');
 
