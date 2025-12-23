@@ -21,13 +21,13 @@ export function StudentPortal() {
       
       if (foundResult) {
         setResult(foundResult);
-        toast.success('Result found!');
+        toast.success('Result found! 🎉');
       } else {
-        toast.error('No result found for this seat number');
+        toast.error('No result found for this seat number 😔');
       }
       
       setIsLoading(false);
-    }, 500);
+    }, 600);
   };
 
   const handleBack = () => {

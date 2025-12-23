@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { ADMIN_PASSWORD } from '@/types/exam';
 
+const ADMIN_PASSWORD = 'portalAdmin';
 const AUTH_KEY = 'admin-authenticated';
 
 export function useAdminAuth() {

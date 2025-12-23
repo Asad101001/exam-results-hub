@@ -1,10 +1,11 @@
-import { ExamResult, TOTAL_EXAM_MARKS, TOTAL_SEMESTER_MARKS, OOPS_QUESTIONS } from '@/types/exam';
+import { ExamResult, TOTAL_EXAM_MARKS, TOTAL_SEMESTER_MARKS, getEncouragementMessage } from '@/types/exam';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GradeDisplay } from '@/components/ui/GradeDisplay';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Award, TrendingUp, ArrowLeft, Sparkles, User, BookOpen, Mail, Building } from 'lucide-react';
+import { exportResultToPDF } from '@/utils/pdfExport';
+import { CalendarDays, Award, TrendingUp, ArrowLeft, Sparkles, User, BookOpen, Mail, Building, Download, PartyPopper } from 'lucide-react';
 
 interface ResultDisplayProps {
   result: ExamResult;
@@ -13,7 +14,7 @@ interface ResultDisplayProps {
 }
 
 export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
-  const examPercentage = (result.examMarks / TOTAL_EXAM_MARKS) * 100;
+  const encouragement = getEncouragementMessage(result.percentage);
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-6 animate-fade-in">
@@ -23,13 +24,31 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
           <ArrowLeft className="w-4 h-4" />
           Back
         </Button>
-        {onAskAI && (
-          <Button onClick={onAskAI} variant="outline" className="gap-2">
-            <Sparkles className="w-4 h-4" />
-            Ask AI Assistant
+        <div className="flex gap-2">
+          <Button onClick={() => exportResultToPDF(result)} variant="outline" className="gap-2">
+            <Download className="w-4 h-4" />
+            Download PDF
           </Button>
-        )}
+          {onAskAI && (
+            <Button onClick={onAskAI} variant="outline" className="gap-2">
+              <Sparkles className="w-4 h-4" />
+              Ask AI
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* Fun Encouragement Banner */}
+      <Card className="agent-card overflow-hidden border-primary/20">
+        <CardContent className="p-4 flex items-center gap-4">
+          <div className="text-4xl fun-bounce">{encouragement.emoji}</div>
+          <div>
+            <p className="font-semibold text-lg">{encouragement.message}</p>
+            <p className="text-sm text-muted-foreground">Keep up the great work in Object Oriented Programming!</p>
+          </div>
+          {result.percentage >= 80 && <PartyPopper className="w-8 h-8 text-accent ml-auto fun-wiggle" />}
+        </CardContent>
+      </Card>
 
       {/* Student Info Card */}
       <Card className="shadow-lg border-0 overflow-hidden">
@@ -69,14 +88,14 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
 
       {/* Score Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-md">
+        <Card className="agent-card">
           <CardContent className="p-6 flex flex-col items-center justify-center">
             <ProgressRing percentage={result.percentage} size={140} />
             <p className="mt-4 text-sm text-muted-foreground">Semester Performance</p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-md">
+        <Card className="agent-card">
           <CardContent className="p-6">
             <h4 className="font-semibold text-lg mb-4">Performance Summary</h4>
             <div className="space-y-3">
@@ -108,7 +127,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
       </div>
 
       {/* Question-wise Results */}
-      <Card className="shadow-md">
+      <Card className="agent-card">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
@@ -119,7 +138,6 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
           <div className="space-y-4">
             {result.questions.map((question, index) => {
               const questionPercentage = (question.marksObtained / question.maxMarks) * 100;
-              const topic = OOPS_QUESTIONS[index]?.topic || '';
               return (
                 <div key={index} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -127,10 +145,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
                       <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
                         Q{question.questionNumber}
                       </span>
-                      <div>
-                        <span className="font-medium">Question {question.questionNumber}</span>
-                        {topic && <p className="text-xs text-muted-foreground">{topic}</p>}
-                      </div>
+                      <span className="font-medium">Question {question.questionNumber}</span>
                     </div>
                     <span className="text-sm font-mono">
                       {question.marksObtained} / {question.maxMarks}
@@ -154,7 +169,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
       </Card>
 
       {/* Teacher Information */}
-      <Card className="shadow-md">
+      <Card className="agent-card">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <User className="w-5 h-5" />
@@ -209,7 +224,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
 
       {/* Remarks */}
       {result.remarks && (
-        <Card className="shadow-md border-accent/30 bg-accent/5">
+        <Card className="agent-card border-accent/30 bg-accent/5">
           <CardContent className="p-6">
             <h4 className="font-semibold text-accent mb-2">Teacher's Remarks</h4>
             <p className="text-foreground">{result.remarks}</p>
