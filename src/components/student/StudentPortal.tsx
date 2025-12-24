@@ -3,6 +3,7 @@ import { useExamResults } from '@/hooks/useExamResults';
 import { SeatNumberInput } from './SeatNumberInput';
 import { ResultDisplay } from './ResultDisplay';
 import { AIAssistant } from '../ai/AIAssistant';
+import { Confetti } from '@/components/ui/Confetti';
 import { ExamResult } from '@/types/exam';
 import { toast } from 'sonner';
 
@@ -11,6 +12,7 @@ export function StudentPortal() {
   const [result, setResult] = useState<ExamResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showAI, setShowAI] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const handleSearch = (seatNumber: string) => {
     setIsLoading(true);
@@ -22,6 +24,11 @@ export function StudentPortal() {
       if (foundResult) {
         setResult(foundResult);
         toast.success('Result found! 🎉');
+        // Show confetti for good results
+        if (foundResult.percentage >= 60) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 100);
+        }
       } else {
         toast.error('No result found for this seat number 😔');
       }
@@ -46,11 +53,14 @@ export function StudentPortal() {
 
   if (result) {
     return (
-      <ResultDisplay 
-        result={result} 
-        onBack={handleBack} 
-        onAskAI={() => setShowAI(true)}
-      />
+      <>
+        <Confetti trigger={showConfetti} />
+        <ResultDisplay 
+          result={result} 
+          onBack={handleBack} 
+          onAskAI={() => setShowAI(true)}
+        />
+      </>
     );
   }
 

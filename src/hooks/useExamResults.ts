@@ -1,80 +1,83 @@
 import { useLocalStorage } from './useLocalStorage';
 import { ExamResult, calculateGrade, OOPS_QUESTIONS, TOTAL_SEMESTER_MARKS } from '@/types/exam';
 import { useCallback } from 'react';
+import { encryptCSV, decryptCSV } from '@/utils/csvEncryption';
 
 const STORAGE_KEY = 'exam-results';
 
-// Current date for sample data
-const currentDate = new Date().toISOString().split('T')[0];
-
-// Sample data for demonstration
-const sampleResults: ExamResult[] = [
-  {
-    id: '1',
-    seatNumber: 'OOP001',
-    studentName: 'Rahul Sharma',
-    examName: 'OOPs Mid-Semester Examination 2024',
-    examDate: currentDate,
-    subject: 'Object Oriented Programming',
-    questions: [
-      { questionNumber: 1, marksObtained: 8, maxMarks: 10 },
-      { questionNumber: 2, marksObtained: 9, maxMarks: 10 },
-      { questionNumber: 3, marksObtained: 7, maxMarks: 10 },
-      { questionNumber: 4, marksObtained: 5, maxMarks: 6 },
-      { questionNumber: 5, marksObtained: 8, maxMarks: 10 },
-      { questionNumber: 6, marksObtained: 9, maxMarks: 10 },
-      { questionNumber: 7, marksObtained: 12, maxMarks: 14 },
-    ],
-    examMarks: 58,
-    semesterMarks: 83,
-    percentage: 83,
-    grade: 'A',
-    rank: 3,
-    remarks: 'Excellent understanding of OOPs concepts!',
-    teacher: {
-      name: 'Dr. Priya Mehta',
-      department: 'Computer Science',
-      email: 'priya.mehta@university.edu',
-      designation: 'Associate Professor',
+// Sample data for demonstration - uses current date dynamically
+const createSampleResults = (): ExamResult[] => {
+  const currentDate = new Date().toISOString().split('T')[0];
+  const now = new Date().toISOString();
+  
+  return [
+    {
+      id: '1',
+      seatNumber: 'OOP001',
+      studentName: 'Rahul Sharma',
+      examName: 'OOPs Mid-Semester Examination 2024',
+      examDate: currentDate,
+      subject: 'Object Oriented Programming',
+      questions: [
+        { questionNumber: 1, marksObtained: 8, maxMarks: 10 },
+        { questionNumber: 2, marksObtained: 9, maxMarks: 10 },
+        { questionNumber: 3, marksObtained: 7, maxMarks: 10 },
+        { questionNumber: 4, marksObtained: 5, maxMarks: 6 },
+        { questionNumber: 5, marksObtained: 8, maxMarks: 10 },
+        { questionNumber: 6, marksObtained: 9, maxMarks: 10 },
+        { questionNumber: 7, marksObtained: 12, maxMarks: 14 },
+      ],
+      examMarks: 58,
+      semesterMarks: 83,
+      percentage: 83,
+      grade: 'A',
+      rank: 3,
+      remarks: 'Excellent understanding of OOPs concepts!',
+      teacher: {
+        name: 'Dr. Priya Mehta',
+        department: 'Computer Science',
+        email: 'priya.mehta@university.edu',
+        designation: 'Associate Professor',
+      },
+      createdAt: now,
+      updatedAt: now,
     },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    seatNumber: 'OOP002',
-    studentName: 'Ananya Patel',
-    examName: 'OOPs Mid-Semester Examination 2024',
-    examDate: currentDate,
-    subject: 'Object Oriented Programming',
-    questions: [
-      { questionNumber: 1, marksObtained: 10, maxMarks: 10 },
-      { questionNumber: 2, marksObtained: 10, maxMarks: 10 },
-      { questionNumber: 3, marksObtained: 9, maxMarks: 10 },
-      { questionNumber: 4, marksObtained: 6, maxMarks: 6 },
-      { questionNumber: 5, marksObtained: 9, maxMarks: 10 },
-      { questionNumber: 6, marksObtained: 10, maxMarks: 10 },
-      { questionNumber: 7, marksObtained: 13, maxMarks: 14 },
-    ],
-    examMarks: 67,
-    semesterMarks: 95,
-    percentage: 95,
-    grade: 'A+',
-    rank: 1,
-    remarks: 'Outstanding performance! Top of the class.',
-    teacher: {
-      name: 'Dr. Priya Mehta',
-      department: 'Computer Science',
-      email: 'priya.mehta@university.edu',
-      designation: 'Associate Professor',
+    {
+      id: '2',
+      seatNumber: 'OOP002',
+      studentName: 'Ananya Patel',
+      examName: 'OOPs Mid-Semester Examination 2024',
+      examDate: currentDate,
+      subject: 'Object Oriented Programming',
+      questions: [
+        { questionNumber: 1, marksObtained: 10, maxMarks: 10 },
+        { questionNumber: 2, marksObtained: 10, maxMarks: 10 },
+        { questionNumber: 3, marksObtained: 9, maxMarks: 10 },
+        { questionNumber: 4, marksObtained: 6, maxMarks: 6 },
+        { questionNumber: 5, marksObtained: 9, maxMarks: 10 },
+        { questionNumber: 6, marksObtained: 10, maxMarks: 10 },
+        { questionNumber: 7, marksObtained: 13, maxMarks: 14 },
+      ],
+      examMarks: 67,
+      semesterMarks: 95,
+      percentage: 95,
+      grade: 'A+',
+      rank: 1,
+      remarks: 'Outstanding performance! Top of the class.',
+      teacher: {
+        name: 'Dr. Priya Mehta',
+        department: 'Computer Science',
+        email: 'priya.mehta@university.edu',
+        designation: 'Associate Professor',
+      },
+      createdAt: now,
+      updatedAt: now,
     },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-];
+  ];
+};
 
 export function useExamResults() {
-  const [results, setResults] = useLocalStorage<ExamResult[]>(STORAGE_KEY, sampleResults);
+  const [results, setResults] = useLocalStorage<ExamResult[]>(STORAGE_KEY, createSampleResults());
 
   const findBySeatNumber = useCallback((seatNumber: string): ExamResult | undefined => {
     return results.find(
@@ -132,7 +135,9 @@ export function useExamResults() {
   }, [setResults]);
 
   const importFromCSV = useCallback((csvContent: string) => {
-    const lines = csvContent.trim().split('\n');
+    // First try to decrypt (will return as-is if not encrypted)
+    const decryptedContent = decryptCSV(csvContent);
+    const lines = decryptedContent.trim().split('\n');
     if (lines.length < 2) return { success: 0, errors: [] };
     
     const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
@@ -189,7 +194,7 @@ export function useExamResults() {
     return { success, errors };
   }, [setResults]);
 
-  const exportToCSV = useCallback(() => {
+  const exportToCSV = useCallback((encrypted: boolean = false) => {
     const headers = ['SeatNumber', 'Name', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'ExamMarks', 'Semester', 'Percentage', 'Grade', 'Rank', 'Remarks', 'Teacher', 'Date'];
     const rows = results.map(r => [
       r.seatNumber,
@@ -205,10 +210,16 @@ export function useExamResults() {
       r.examDate,
     ].join(','));
     
-    return [headers.join(','), ...rows].join('\n');
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    
+    if (encrypted) {
+      return encryptCSV(csvContent);
+    }
+    
+    return csvContent;
   }, [results]);
 
-  const generateSampleCSV = useCallback((count: number = 30) => {
+  const generateSampleCSV = useCallback((count: number = 30, encrypted: boolean = false) => {
     const names = ['Amit Kumar', 'Priya Singh', 'Rohit Verma', 'Sneha Gupta', 'Vikram Patel', 'Anjali Sharma', 'Karthik Nair', 'Pooja Reddy', 'Arjun Das', 'Neha Joshi', 'Siddharth Rao', 'Kavya Menon', 'Rahul Saxena', 'Divya Pillai', 'Manish Tiwari', 'Shruti Iyer', 'Akash Pandey', 'Riya Kapoor', 'Deepak Mishra', 'Megha Choudhury', 'Nikhil Agarwal', 'Tanvi Bhatt', 'Varun Khanna', 'Ishita Sen', 'Gaurav Malhotra', 'Pallavi Jain', 'Rohan Bose', 'Simran Kaur', 'Aditya Hegde', 'Kriti Banerjee'];
     
     const headers = ['SeatNumber', 'Name', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Semester', 'Rank', 'Remarks', 'Teacher', 'Date'];
@@ -237,7 +248,13 @@ export function useExamResults() {
       ].join(',');
     });
     
-    return [headers.join(','), ...rows].join('\n');
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    
+    if (encrypted) {
+      return encryptCSV(csvContent);
+    }
+    
+    return csvContent;
   }, []);
 
   // Summary statistics for admin
