@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useExamResults } from '@/hooks/useExamResults';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { useCurrentDate } from '@/hooks/useCurrentDate';
 import { ExamResult, OOPS_QUESTIONS, TOTAL_EXAM_MARKS, TOTAL_SEMESTER_MARKS, QuestionMark, TeacherInfo } from '@/types/exam';
 import { AdminLogin } from './AdminLogin';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,23 +10,31 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { GradeDisplay } from '@/components/ui/GradeDisplay';
+import { Confetti } from '@/components/ui/Confetti';
 import { exportResultToPDF, exportAllResultsToPDF } from '@/utils/pdfExport';
+import { isEncrypted } from '@/utils/csvEncryption';
 import { 
   Plus, Trash2, Users, LogOut, BarChart3, Award, TrendingUp, BookOpen, 
   Download, Upload, FileText, Edit, Search, RefreshCw, Sparkles, 
-  CheckCircle2, XCircle, FileSpreadsheet, Settings, AlertTriangle, Zap, Coffee
+  CheckCircle2, XCircle, FileSpreadsheet, Settings, AlertTriangle, Zap, Coffee,
+  Lock, Unlock, Rocket, PartyPopper, Star
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 export function AdminDashboard() {
   const { isAuthenticated, login, logout, error } = useAdminAuth();
   const { results, addResult, updateResult, deleteResult, clearAllResults, importFromCSV, exportToCSV, generateSampleCSV, getStatistics } = useExamResults();
+  const { getFullDateTime, getISODate } = useCurrentDate();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingResult, setEditingResult] = useState<ExamResult | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
+  const [encryptExports, setEncryptExports] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isAuthenticated) {
@@ -46,10 +55,13 @@ export function AdminDashboard() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
+      const wasEncrypted = isEncrypted(content);
       const { success, errors } = importFromCSV(content);
       
       if (success > 0) {
-        toast.success(`Successfully imported ${success} results! 🎉`);
+        toast.success(`Successfully imported ${success} results! ${wasEncrypted ? '🔓 (Decrypted)' : ''} 🎉`);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 100);
       }
       if (errors.length > 0) {
         toast.error(`${errors.length} rows failed to import`);
@@ -60,27 +72,27 @@ export function AdminDashboard() {
   };
 
   const handleCSVExport = () => {
-    const csv = exportToCSV();
+    const csv = exportToCSV(encryptExports);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `oops_results_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `oops_results_${getISODate()}${encryptExports ? '_encrypted' : ''}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('CSV exported! 📥');
+    toast.success(`CSV exported! ${encryptExports ? '🔒 Encrypted' : '📥'}`);
   };
 
   const handleGenerateSampleCSV = () => {
-    const csv = generateSampleCSV(30);
+    const csv = generateSampleCSV(30, encryptExports);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `sample_oops_data_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `sample_oops_data_${getISODate()}${encryptExports ? '_encrypted' : ''}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Sample CSV with 30 students generated! 🎲');
+    toast.success(`Sample CSV generated! ${encryptExports ? '🔒 Encrypted' : '🎲'}`);
   };
 
   const handleEditResult = (result: ExamResult) => {
@@ -88,26 +100,36 @@ export function AdminDashboard() {
     setIsEditDialogOpen(true);
   };
 
+  const handleAddSuccess = () => {
+    setIsAddDialogOpen(false);
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 100);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
+      <Confetti trigger={showConfetti} />
+      
       {/* Agent-style Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-3 gradient-primary rounded-xl shadow-glow">
+          <div className="p-3 gradient-primary rounded-xl shadow-glow hover-lift">
             <Zap className="w-7 h-7 text-primary-foreground" />
           </div>
           <div>
             <h2 className="text-2xl font-bold flex items-center gap-2">
-              Admin Control Center
-              <span className="text-xs px-2 py-0.5 bg-success/20 text-success rounded-full font-normal">Online</span>
+              <span className="fun-gradient-text">Admin Control Center</span>
+              <Rocket className="w-5 h-5 text-accent fun-wiggle" />
+              <span className="text-xs px-2 py-0.5 bg-success/20 text-success rounded-full font-normal animate-sparkle">Online</span>
             </h2>
             <p className="text-muted-foreground flex items-center gap-2">
               <Coffee className="w-4 h-4" />
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+              {getFullDateTime()}
+              <Star className="w-3 h-3 text-warning" />
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={logout} className="gap-2">
+        <Button variant="outline" onClick={logout} className="gap-2 hover-lift">
           <LogOut className="w-4 h-4" /> Logout
         </Button>
       </div>
@@ -127,7 +149,7 @@ export function AdminDashboard() {
             <>
               {/* Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="agent-card">
+                <Card className="agent-card hover-lift">
                   <CardContent className="p-6 flex items-center gap-4">
                     <div className="p-3 bg-primary/10 rounded-xl">
                       <Users className="w-6 h-6 text-primary" />
@@ -138,7 +160,7 @@ export function AdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="agent-card">
+                <Card className="agent-card hover-lift">
                   <CardContent className="p-6 flex items-center gap-4">
                     <div className="p-3 bg-accent/10 rounded-xl">
                       <TrendingUp className="w-6 h-6 text-accent" />
@@ -149,7 +171,7 @@ export function AdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="agent-card">
+                <Card className="agent-card hover-lift">
                   <CardContent className="p-6 flex items-center gap-4">
                     <div className="p-3 bg-success/10 rounded-xl">
                       <CheckCircle2 className="w-6 h-6 text-success" />
@@ -160,7 +182,7 @@ export function AdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="agent-card">
+                <Card className="agent-card hover-lift">
                   <CardContent className="p-6 flex items-center gap-4">
                     <div className="p-3 bg-warning/10 rounded-xl">
                       <Award className="w-6 h-6 text-warning" />
@@ -175,11 +197,12 @@ export function AdminDashboard() {
 
               {/* Top & Bottom Performers */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="agent-card border-success/30">
+                <Card className="agent-card border-success/30 hover-lift">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <Sparkles className="w-5 h-5 text-success" />
-                      Top Performer 🏆
+                      Top Performer
+                      <PartyPopper className="w-4 h-4 text-accent fun-wiggle" />
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -195,7 +218,7 @@ export function AdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="agent-card border-warning/30">
+                <Card className="agent-card border-warning/30 hover-lift">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <AlertTriangle className="w-5 h-5 text-warning" />
@@ -228,7 +251,7 @@ export function AdminDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-7 gap-3">
                     {stats.questionStats.map((q) => (
-                      <div key={q.questionNumber} className="p-4 bg-muted/50 rounded-xl text-center hover:bg-muted transition-colors">
+                      <div key={q.questionNumber} className="p-4 bg-muted/50 rounded-xl text-center hover:bg-muted transition-colors hover-lift cursor-default">
                         <p className="text-xs text-muted-foreground font-medium">Q{q.questionNumber}</p>
                         <p className="text-xl font-bold mt-1">{q.avgMarks}</p>
                         <p className="text-xs text-muted-foreground">/{q.maxMarks}</p>
@@ -248,7 +271,10 @@ export function AdminDashboard() {
               {/* Grade Distribution */}
               <Card className="agent-card">
                 <CardHeader>
-                  <CardTitle>Grade Distribution</CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                    Grade Distribution
+                    <Sparkles className="w-4 h-4 text-accent" />
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-4">
@@ -256,7 +282,7 @@ export function AdminDashboard() {
                       const count = stats.gradeDistribution[grade] || 0;
                       const percentage = stats.totalStudents > 0 ? Math.round((count / stats.totalStudents) * 100) : 0;
                       return (
-                        <div key={grade} className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl min-w-[120px]">
+                        <div key={grade} className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl min-w-[120px] hover-lift cursor-default">
                           <GradeDisplay grade={grade} size="sm" />
                           <div>
                             <span className="font-bold">{count}</span>
@@ -272,6 +298,7 @@ export function AdminDashboard() {
           ) : (
             <Card className="agent-card">
               <CardContent className="p-12 text-center">
+                <Rocket className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground">No results yet. Add some students to see statistics!</p>
               </CardContent>
             </Card>
@@ -291,21 +318,24 @@ export function AdminDashboard() {
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => exportAllResultsToPDF(results)} className="gap-2">
+              <Button variant="outline" onClick={() => exportAllResultsToPDF(results)} className="gap-2 hover-lift">
                 <FileText className="w-4 h-4" /> Export All PDF
               </Button>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="gap-2 gradient-primary text-primary-foreground">
+                  <Button className="gap-2 gradient-primary text-primary-foreground hover-lift">
                     <Plus className="w-4 h-4" /> Add Student
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Add New Student Result</DialogTitle>
+                    <DialogTitle className="flex items-center gap-2">
+                      Add New Student Result
+                      <Sparkles className="w-4 h-4 text-accent" />
+                    </DialogTitle>
                     <DialogDescription>Enter the student's exam details below.</DialogDescription>
                   </DialogHeader>
-                  <AddResultForm onSuccess={() => setIsAddDialogOpen(false)} />
+                  <AddResultForm onSuccess={handleAddSuccess} />
                 </DialogContent>
               </Dialog>
             </div>
@@ -365,14 +395,37 @@ export function AdminDashboard() {
 
         {/* Import/Export Tab */}
         <TabsContent value="import-export" className="space-y-4 mt-6">
+          {/* Encryption Toggle */}
+          <Card className="agent-card border-primary/30">
+            <CardContent className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {encryptExports ? <Lock className="w-5 h-5 text-primary" /> : <Unlock className="w-5 h-5 text-muted-foreground" />}
+                <div>
+                  <p className="font-medium">CSV Encryption</p>
+                  <p className="text-xs text-muted-foreground">
+                    {encryptExports ? 'Exports will be encrypted (harder to read directly)' : 'Exports will be plain text'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="encrypt-toggle" className="text-sm">Encrypt</Label>
+                <Switch 
+                  id="encrypt-toggle" 
+                  checked={encryptExports} 
+                  onCheckedChange={setEncryptExports} 
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="agent-card">
+            <Card className="agent-card hover-lift">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="w-5 h-5" />
                   Import Data
                 </CardTitle>
-                <CardDescription>Upload a CSV file to bulk import student results</CardDescription>
+                <CardDescription>Upload a CSV file (plain or encrypted) to bulk import</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <input
@@ -384,30 +437,32 @@ export function AdminDashboard() {
                 />
                 <Button 
                   variant="outline" 
-                  className="w-full h-24 border-dashed flex-col gap-2"
+                  className="w-full h-24 border-dashed flex-col gap-2 hover:border-primary/50 hover:bg-primary/5 transition-all"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload className="w-8 h-8 text-muted-foreground" />
                   <span>Click to upload CSV</span>
+                  <span className="text-xs text-muted-foreground">(Auto-detects encrypted files)</span>
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  CSV should have columns: SeatNumber, Name, Q1-Q7, Semester, Rank, Remarks, Teacher, Date
+                  CSV columns: SeatNumber, Name, Q1-Q7, Semester, Rank, Remarks, Teacher, Date
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="agent-card">
+            <Card className="agent-card hover-lift">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Download className="w-5 h-5" />
                   Export Data
+                  {encryptExports && <Lock className="w-4 h-4 text-primary" />}
                 </CardTitle>
                 <CardDescription>Download all results as CSV or PDF</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button variant="outline" className="w-full justify-start gap-2" onClick={handleCSVExport}>
                   <FileSpreadsheet className="w-4 h-4" />
-                  Export as CSV
+                  Export as CSV {encryptExports && '(Encrypted)'}
                 </Button>
                 <Button variant="outline" className="w-full justify-start gap-2" onClick={() => exportAllResultsToPDF(results)}>
                   <FileText className="w-4 h-4" />
@@ -415,7 +470,7 @@ export function AdminDashboard() {
                 </Button>
                 <Button variant="outline" className="w-full justify-start gap-2" onClick={handleGenerateSampleCSV}>
                   <RefreshCw className="w-4 h-4" />
-                  Generate Sample CSV (30 students)
+                  Generate Sample CSV (30 students) {encryptExports && '(Encrypted)'}
                 </Button>
               </CardContent>
             </Card>
@@ -424,13 +479,19 @@ export function AdminDashboard() {
           {/* Sample CSV Format */}
           <Card className="agent-card">
             <CardHeader>
-              <CardTitle className="text-base">CSV Format Reference</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2">
+                CSV Format Reference
+                <Sparkles className="w-4 h-4 text-accent" />
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <pre className="text-xs bg-muted p-4 rounded-lg overflow-x-auto font-mono">
 {`SeatNumber,Name,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Semester,Rank,Remarks,Teacher,Date
-OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,2024-12-23`}
+OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,${getISODate()}`}
               </pre>
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 Tip: Encrypted files start with "OOPS_ENC_V1:" - the system auto-detects and decrypts them on import.
+              </p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -438,7 +499,7 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,2024-12-23`}
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="agent-card">
+            <Card className="agent-card hover-lift">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="w-5 h-5" />
@@ -467,7 +528,7 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,2024-12-23`}
               </CardContent>
             </Card>
 
-            <Card className="agent-card border-destructive/30">
+            <Card className="agent-card border-destructive/30 hover-lift">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="w-5 h-5" />
@@ -509,7 +570,10 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,2024-12-23`}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Student Result</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              Edit Student Result
+              <Edit className="w-4 h-4 text-primary" />
+            </DialogTitle>
             <DialogDescription>Update {editingResult?.studentName}'s details</DialogDescription>
           </DialogHeader>
           {editingResult && (
@@ -526,11 +590,12 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,2024-12-23`}
 
 function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
   const { addResult } = useExamResults();
+  const { getISODate } = useCurrentDate();
   const [form, setForm] = useState({
     seatNumber: '',
     studentName: '',
     examName: 'OOPs Mid-Semester Examination 2024',
-    examDate: new Date().toISOString().split('T')[0],
+    examDate: getISODate(),
     subject: 'Object Oriented Programming',
     semesterMarks: 0,
     rank: undefined as number | undefined,
@@ -564,7 +629,9 @@ function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Student Information</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Student Information <Users className="w-4 h-4" />
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           <Input 
             placeholder="Seat Number (e.g., OOP003)" 
@@ -582,7 +649,10 @@ function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Question-wise Marks (Total: {examMarksTotal}/{TOTAL_EXAM_MARKS})</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Question-wise Marks <BookOpen className="w-4 h-4" />
+          <span className="text-primary">(Total: {examMarksTotal}/{TOTAL_EXAM_MARKS})</span>
+        </h4>
         <div className="grid grid-cols-7 gap-2">
           {questions.map((q, i) => (
             <div key={i} className="space-y-1">
@@ -605,7 +675,9 @@ function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Semester Information</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Semester Information <TrendingUp className="w-4 h-4" />
+        </h4>
         <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="text-xs text-muted-foreground">Semester Marks (out of 100)</label>
@@ -640,7 +712,9 @@ function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Teacher Information</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Teacher Information <Award className="w-4 h-4" />
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           <Input 
             placeholder="Teacher Name" 
@@ -678,6 +752,7 @@ function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <Button type="submit" className="w-full gradient-primary text-primary-foreground">
+        <Sparkles className="w-4 h-4 mr-2" />
         Save Result
       </Button>
     </form>
@@ -708,14 +783,16 @@ function EditResultForm({ result, onSuccess }: { result: ExamResult; onSuccess: 
       questions,
       teacher,
     });
-    toast.success('Result updated! ✅');
+    toast.success('Result updated! ✨');
     onSuccess();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Student Information</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Student Information <Users className="w-4 h-4" />
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           <Input 
             placeholder="Seat Number" 
@@ -733,7 +810,10 @@ function EditResultForm({ result, onSuccess }: { result: ExamResult; onSuccess: 
       </div>
 
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Question-wise Marks (Total: {examMarksTotal}/{TOTAL_EXAM_MARKS})</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Question-wise Marks <BookOpen className="w-4 h-4" />
+          <span className="text-primary">(Total: {examMarksTotal}/{TOTAL_EXAM_MARKS})</span>
+        </h4>
         <div className="grid grid-cols-7 gap-2">
           {questions.map((q, i) => (
             <div key={i} className="space-y-1">
@@ -756,7 +836,9 @@ function EditResultForm({ result, onSuccess }: { result: ExamResult; onSuccess: 
       </div>
 
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Semester Information</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Semester Information <TrendingUp className="w-4 h-4" />
+        </h4>
         <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="text-xs text-muted-foreground">Semester Marks (out of 100)</label>
@@ -791,7 +873,9 @@ function EditResultForm({ result, onSuccess }: { result: ExamResult; onSuccess: 
       </div>
 
       <div className="space-y-4">
-        <h4 className="font-medium text-sm text-muted-foreground">Teacher Information</h4>
+        <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+          Teacher Information <Award className="w-4 h-4" />
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           <Input 
             placeholder="Teacher Name" 
@@ -829,6 +913,7 @@ function EditResultForm({ result, onSuccess }: { result: ExamResult; onSuccess: 
       </div>
 
       <Button type="submit" className="w-full gradient-primary text-primary-foreground">
+        <CheckCircle2 className="w-4 h-4 mr-2" />
         Update Result
       </Button>
     </form>
