@@ -5,7 +5,7 @@ import { ProgressRing } from '@/components/ui/ProgressRing';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { exportResultToPDF } from '@/utils/pdfExport';
-import { CalendarDays, Award, TrendingUp, ArrowLeft, Sparkles, User, BookOpen, Mail, Building, Download, PartyPopper } from 'lucide-react';
+import { CalendarDays, Award, TrendingUp, ArrowLeft, Sparkles, User, BookOpen, Mail, Building, Download } from 'lucide-react';
 
 interface ResultDisplayProps {
   result: ExamResult;
@@ -38,20 +38,19 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
         </div>
       </div>
 
-      {/* Fun Encouragement Banner */}
+      {/* Encouragement Banner */}
       <Card className="agent-card overflow-hidden border-primary/20">
         <CardContent className="p-4 flex items-center gap-4">
-          <div className="text-4xl fun-bounce">{encouragement.emoji}</div>
+          <div className="text-3xl">{encouragement.emoji}</div>
           <div>
-            <p className="font-semibold text-lg">{encouragement.message}</p>
+            <p className="font-semibold">{encouragement.message}</p>
             <p className="text-sm text-muted-foreground">Keep up the great work in Object Oriented Programming!</p>
           </div>
-          {result.percentage >= 80 && <PartyPopper className="w-8 h-8 text-accent ml-auto fun-wiggle" />}
         </CardContent>
       </Card>
 
       {/* Student Info Card */}
-      <Card className="shadow-lg border-0 overflow-hidden">
+      <Card className="shadow-md border-0 overflow-hidden">
         <div className="gradient-primary p-6 text-primary-foreground">
           <div className="flex items-start justify-between">
             <div>
@@ -153,7 +152,7 @@ export function ResultDisplay({ result, onBack, onAskAI }: ResultDisplayProps) {
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full gradient-primary rounded-full transition-all duration-700 ease-out"
+                      className="h-full gradient-primary rounded-full transition-all duration-500"
                       style={{ width: `${questionPercentage}%` }}
                     />
                   </div>

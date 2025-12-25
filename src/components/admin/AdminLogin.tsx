@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Shield, Lock, AlertCircle, Sparkles, Zap } from 'lucide-react';
+import { Shield, Lock, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface AdminLoginProps {
@@ -21,22 +21,18 @@ export function AdminLogin({ onLogin, error }: AdminLoginProps) {
     setTimeout(() => {
       onLogin(password);
       setIsLoading(false);
-    }, 500);
+    }, 400);
   };
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center animate-fade-in">
       <Card className="w-full max-w-md agent-card border-0">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto p-4 gradient-primary rounded-2xl w-fit shadow-glow relative">
+          <div className="mx-auto p-4 gradient-primary rounded-2xl w-fit shadow-sm">
             <Shield className="w-10 h-10 text-primary-foreground" />
-            <Sparkles className="absolute -top-2 -right-2 w-5 h-5 text-accent" />
           </div>
           <div>
-            <CardTitle className="text-2xl flex items-center justify-center gap-2">
-              Admin Access
-              <Zap className="w-5 h-5 text-accent" />
-            </CardTitle>
+            <CardTitle className="text-2xl">Admin Access</CardTitle>
             <CardDescription className="mt-2">
               Enter the portal password to access the control center
             </CardDescription>
@@ -65,7 +61,7 @@ export function AdminLogin({ onLogin, error }: AdminLoginProps) {
             
             <Button 
               type="submit" 
-              className="w-full gradient-primary text-primary-foreground shadow-md hover:shadow-glow transition-shadow"
+              className="w-full gradient-primary text-primary-foreground"
               disabled={isLoading || !password}
             >
               {isLoading ? (
@@ -80,7 +76,7 @@ export function AdminLogin({ onLogin, error }: AdminLoginProps) {
           </form>
           
           <p className="text-xs text-muted-foreground text-center mt-4">
-            💡 Contact your department administrator if you've forgotten the password.
+            Contact your department administrator if you've forgotten the password.
           </p>
         </CardContent>
       </Card>

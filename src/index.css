@@ -105,10 +105,6 @@
     background: var(--gradient-card);
   }
 
-  .gradient-fun {
-    background: var(--gradient-fun);
-  }
-
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
@@ -127,136 +123,33 @@
   }
 
   .agent-card {
-    @apply gradient-card border border-border/50 shadow-md hover:shadow-lg transition-all duration-300;
-  }
-
-  .agent-glow {
-    @apply relative;
-  }
-
-  .agent-glow::before {
-    content: '';
-    @apply absolute inset-0 rounded-inherit opacity-0 transition-opacity duration-300;
-    background: var(--gradient-glow);
-    z-index: -1;
-  }
-
-  .agent-glow:hover::before {
-    @apply opacity-100;
-  }
-
-  .fun-bounce {
-    animation: fun-bounce 0.6s ease-in-out;
-  }
-
-  .fun-wiggle {
-    animation: fun-wiggle 0.5s ease-in-out;
-  }
-
-  .fun-pop {
-    animation: fun-pop 0.3s ease-out;
+    @apply bg-card border border-border/60 shadow-sm hover:shadow-md transition-all duration-200;
   }
 
   .status-pulse {
     animation: status-pulse 2s ease-in-out infinite;
   }
 
-  .typing-dots::after {
-    content: '';
-    animation: typing-dots 1.5s infinite;
-  }
-
-  .animate-float {
-    animation: float 20s ease-in-out infinite;
-  }
-
-  .animate-confetti {
-    animation: confetti-fall 3s ease-out forwards;
-  }
-
-  .animate-sparkle {
-    animation: sparkle 1.5s ease-in-out infinite;
-  }
-
   .hover-lift {
-    @apply transition-all duration-300;
+    @apply transition-all duration-200;
   }
 
   .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
-
-  .fun-gradient-text {
-    @apply bg-clip-text text-transparent;
-    background: var(--gradient-fun);
-  }
-}
-
-@keyframes fun-bounce {
-  0%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-8px); }
-  50% { transform: translateY(0); }
-  70% { transform: translateY(-4px); }
-}
-
-@keyframes fun-wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-3deg); }
-  75% { transform: rotate(3deg); }
-}
-
-@keyframes fun-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-  100% { transform: scale(1); }
 }
 
 @keyframes status-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.6; }
 }
 
-@keyframes typing-dots {
-  0% { content: ''; }
-  25% { content: '.'; }
-  50% { content: '..'; }
-  75% { content: '...'; }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-20px) rotate(5deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(-5deg);
-  }
-  75% {
-    transform: translateY(-30px) rotate(3deg);
-  }
-}
-
-@keyframes confetti-fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(100vh) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-@keyframes sparkle {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.2);
-  }
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
 }
