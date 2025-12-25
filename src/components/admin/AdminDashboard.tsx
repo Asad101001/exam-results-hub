@@ -15,9 +15,9 @@ import { exportResultToPDF, exportAllResultsToPDF } from '@/utils/pdfExport';
 import { isEncrypted } from '@/utils/csvEncryption';
 import { 
   Plus, Trash2, Users, LogOut, BarChart3, Award, TrendingUp, BookOpen, 
-  Download, Upload, FileText, Edit, Search, RefreshCw, Sparkles, 
-  CheckCircle2, XCircle, FileSpreadsheet, Settings, AlertTriangle, Zap, Coffee,
-  Lock, Unlock, Rocket, PartyPopper, Star
+  Download, Upload, FileText, Edit, Search, RefreshCw, 
+  CheckCircle2, FileSpreadsheet, Settings, AlertTriangle,
+  Lock, Unlock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -110,33 +110,29 @@ export function AdminDashboard() {
     <div className="space-y-6 animate-fade-in">
       <Confetti trigger={showConfetti} />
       
-      {/* Agent-style Header */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-3 gradient-primary rounded-xl shadow-glow hover-lift">
-            <Zap className="w-7 h-7 text-primary-foreground" />
+          <div className="p-3 gradient-primary rounded-xl shadow-sm">
+            <BarChart3 className="w-6 h-6 text-primary-foreground" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="fun-gradient-text">Admin Control Center</span>
-              <Rocket className="w-5 h-5 text-accent fun-wiggle" />
-              <span className="text-xs px-2 py-0.5 bg-success/20 text-success rounded-full font-normal animate-sparkle">Online</span>
+            <h2 className="text-2xl font-bold text-foreground">
+              Admin Control Center
             </h2>
-            <p className="text-muted-foreground flex items-center gap-2">
-              <Coffee className="w-4 h-4" />
+            <p className="text-sm text-muted-foreground">
               {getFullDateTime()}
-              <Star className="w-3 h-3 text-warning" />
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={logout} className="gap-2 hover-lift">
+        <Button variant="outline" onClick={logout} className="gap-2">
           <LogOut className="w-4 h-4" /> Logout
         </Button>
       </div>
 
       {/* Tab Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-12">
+        <TabsList className="grid w-full grid-cols-4 h-11">
           <TabsTrigger value="overview" className="gap-2"><BarChart3 className="w-4 h-4" /> Overview</TabsTrigger>
           <TabsTrigger value="students" className="gap-2"><Users className="w-4 h-4" /> Students</TabsTrigger>
           <TabsTrigger value="import-export" className="gap-2"><FileSpreadsheet className="w-4 h-4" /> Import/Export</TabsTrigger>
@@ -197,12 +193,11 @@ export function AdminDashboard() {
 
               {/* Top & Bottom Performers */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="agent-card border-success/30 hover-lift">
+                <Card className="agent-card border-success/20">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-success" />
+                      <Award className="w-5 h-5 text-success" />
                       Top Performer
-                      <PartyPopper className="w-4 h-4 text-accent fun-wiggle" />
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -218,7 +213,7 @@ export function AdminDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="agent-card border-warning/30 hover-lift">
+                <Card className="agent-card border-warning/20">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base flex items-center gap-2">
                       <AlertTriangle className="w-5 h-5 text-warning" />
@@ -251,7 +246,7 @@ export function AdminDashboard() {
                 <CardContent>
                   <div className="grid grid-cols-7 gap-3">
                     {stats.questionStats.map((q) => (
-                      <div key={q.questionNumber} className="p-4 bg-muted/50 rounded-xl text-center hover:bg-muted transition-colors hover-lift cursor-default">
+                      <div key={q.questionNumber} className="p-4 bg-muted/50 rounded-lg text-center hover:bg-muted transition-colors cursor-default">
                         <p className="text-xs text-muted-foreground font-medium">Q{q.questionNumber}</p>
                         <p className="text-xl font-bold mt-1">{q.avgMarks}</p>
                         <p className="text-xs text-muted-foreground">/{q.maxMarks}</p>
@@ -271,9 +266,8 @@ export function AdminDashboard() {
               {/* Grade Distribution */}
               <Card className="agent-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle>
                     Grade Distribution
-                    <Sparkles className="w-4 h-4 text-accent" />
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -282,7 +276,7 @@ export function AdminDashboard() {
                       const count = stats.gradeDistribution[grade] || 0;
                       const percentage = stats.totalStudents > 0 ? Math.round((count / stats.totalStudents) * 100) : 0;
                       return (
-                        <div key={grade} className="flex items-center gap-3 p-3 bg-muted/50 rounded-xl min-w-[120px] hover-lift cursor-default">
+                        <div key={grade} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg min-w-[120px] cursor-default">
                           <GradeDisplay grade={grade} size="sm" />
                           <div>
                             <span className="font-bold">{count}</span>
@@ -298,7 +292,7 @@ export function AdminDashboard() {
           ) : (
             <Card className="agent-card">
               <CardContent className="p-12 text-center">
-                <Rocket className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground">No results yet. Add some students to see statistics!</p>
               </CardContent>
             </Card>
@@ -318,20 +312,19 @@ export function AdminDashboard() {
               />
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => exportAllResultsToPDF(results)} className="gap-2 hover-lift">
+              <Button variant="outline" onClick={() => exportAllResultsToPDF(results)} className="gap-2">
                 <FileText className="w-4 h-4" /> Export All PDF
               </Button>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="gap-2 gradient-primary text-primary-foreground hover-lift">
+                  <Button className="gap-2 gradient-primary text-primary-foreground">
                     <Plus className="w-4 h-4" /> Add Student
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
+                    <DialogTitle>
                       Add New Student Result
-                      <Sparkles className="w-4 h-4 text-accent" />
                     </DialogTitle>
                     <DialogDescription>Enter the student's exam details below.</DialogDescription>
                   </DialogHeader>
@@ -419,7 +412,7 @@ export function AdminDashboard() {
           </Card>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="agent-card hover-lift">
+            <Card className="agent-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="w-5 h-5" />
@@ -450,7 +443,7 @@ export function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="agent-card hover-lift">
+            <Card className="agent-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Download className="w-5 h-5" />
@@ -479,9 +472,8 @@ export function AdminDashboard() {
           {/* Sample CSV Format */}
           <Card className="agent-card">
             <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
+              <CardTitle className="text-base">
                 CSV Format Reference
-                <Sparkles className="w-4 h-4 text-accent" />
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -499,7 +491,7 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,${getISODate()
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="agent-card hover-lift">
+            <Card className="agent-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="w-5 h-5" />
@@ -528,7 +520,7 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,${getISODate()
               </CardContent>
             </Card>
 
-            <Card className="agent-card border-destructive/30 hover-lift">
+            <Card className="agent-card border-destructive/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-destructive">
                   <AlertTriangle className="w-5 h-5" />
@@ -570,9 +562,8 @@ OOP001,Rahul Sharma,8,9,7,5,8,9,12,83,3,Good work,Dr. Priya Mehta,${getISODate()
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle>
               Edit Student Result
-              <Edit className="w-4 h-4 text-primary" />
             </DialogTitle>
             <DialogDescription>Update {editingResult?.studentName}'s details</DialogDescription>
           </DialogHeader>
@@ -752,7 +743,6 @@ function AddResultForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
 
       <Button type="submit" className="w-full gradient-primary text-primary-foreground">
-        <Sparkles className="w-4 h-4 mr-2" />
         Save Result
       </Button>
     </form>

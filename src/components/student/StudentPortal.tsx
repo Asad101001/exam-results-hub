@@ -17,24 +17,22 @@ export function StudentPortal() {
   const handleSearch = (seatNumber: string) => {
     setIsLoading(true);
     
-    // Simulate network delay for better UX
     setTimeout(() => {
       const foundResult = findBySeatNumber(seatNumber);
       
       if (foundResult) {
         setResult(foundResult);
-        toast.success('Result found! 🎉');
-        // Show confetti for good results
+        toast.success('Result found!');
         if (foundResult.percentage >= 60) {
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 100);
         }
       } else {
-        toast.error('No result found for this seat number 😔');
+        toast.error('No result found for this seat number');
       }
       
       setIsLoading(false);
-    }, 600);
+    }, 500);
   };
 
   const handleBack = () => {

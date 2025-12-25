@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, GraduationCap, Sparkles, Rocket, Star } from 'lucide-react';
+import { Search, GraduationCap } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,36 +22,19 @@ export function SeatNumberInput({ onSearch, isLoading }: SeatNumberInputProps) {
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg border-0 overflow-hidden hover-lift">
-      <div className="gradient-primary p-6 relative overflow-hidden">
-        {/* Fun floating elements */}
-        <div className="absolute top-2 right-4 animate-float">
-          <Star className="w-4 h-4 text-primary-foreground/30" />
-        </div>
-        <div className="absolute bottom-3 left-6 animate-float" style={{ animationDelay: '1s' }}>
-          <Sparkles className="w-3 h-3 text-primary-foreground/20" />
-        </div>
-        
-        <div className="flex items-center justify-center gap-3 text-primary-foreground relative">
-          <div className="relative">
-            <GraduationCap className="w-8 h-8" />
-            <Rocket className="w-4 h-4 absolute -top-1 -right-1 fun-wiggle" />
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              Check Your Results
-              <Sparkles className="w-4 h-4 animate-sparkle" />
-            </h2>
-          </div>
+      <div className="gradient-primary p-6">
+        <div className="flex items-center justify-center gap-3 text-primary-foreground">
+          <GraduationCap className="w-7 h-7" />
+          <h2 className="text-xl font-semibold">Check Your Results</h2>
         </div>
       </div>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="seatNumber" className="text-sm font-medium text-foreground flex items-center gap-2">
+            <label htmlFor="seatNumber" className="text-sm font-medium text-foreground">
               Enter Your Seat Number
-              <Star className="w-3 h-3 text-warning" />
             </label>
-            <div className={`relative transition-all duration-300 ${isFocused ? 'transform scale-[1.02]' : ''}`}>
+            <div className={`relative transition-all duration-200 ${isFocused ? 'transform scale-[1.01]' : ''}`}>
               <Input
                 id="seatNumber"
                 type="text"
@@ -60,17 +43,17 @@ export function SeatNumberInput({ onSearch, isLoading }: SeatNumberInputProps) {
                 onChange={(e) => setSeatNumber(e.target.value.toUpperCase())}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                className={`pl-4 pr-12 py-6 text-lg font-mono tracking-wider uppercase transition-all duration-300 ${isFocused ? 'ring-2 ring-primary/50 shadow-glow' : ''}`}
+                className={`pl-4 pr-12 py-6 text-lg font-mono tracking-wider uppercase transition-all duration-200 ${isFocused ? 'ring-2 ring-primary/40' : ''}`}
                 disabled={isLoading}
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <Search className={`w-5 h-5 transition-all ${isFocused ? 'text-primary' : ''}`} />
+                <Search className={`w-5 h-5 transition-colors ${isFocused ? 'text-primary' : ''}`} />
               </div>
             </div>
           </div>
           <Button
             type="submit"
-            className={`w-full py-6 text-lg font-medium gradient-primary hover:opacity-90 transition-all ${isLoading ? '' : 'hover-lift'}`}
+            className="w-full py-6 text-lg font-medium gradient-primary hover:opacity-90 transition-all"
             disabled={!seatNumber.trim() || isLoading}
           >
             {isLoading ? (
@@ -79,30 +62,24 @@ export function SeatNumberInput({ onSearch, isLoading }: SeatNumberInputProps) {
                 Searching...
               </span>
             ) : (
-              <span className="flex items-center gap-2">
-                View Results
-                <Rocket className="w-5 h-5" />
-              </span>
+              'View Results'
             )}
           </Button>
         </form>
         <p className="text-center text-sm text-muted-foreground mt-4">
-          <span className="flex items-center justify-center gap-2">
-            Try: 
-            <span 
-              className="font-mono text-primary cursor-pointer hover:underline transition-all hover:text-primary/80" 
-              onClick={() => setSeatNumber('OOP001')}
-            >
-              OOP001
-            </span> 
-            or 
-            <span 
-              className="font-mono text-primary cursor-pointer hover:underline transition-all hover:text-primary/80" 
-              onClick={() => setSeatNumber('OOP002')}
-            >
-              OOP002
-            </span>
-            <Sparkles className="w-3 h-3 text-accent" />
+          Try: 
+          <span 
+            className="font-mono text-primary cursor-pointer hover:underline ml-1" 
+            onClick={() => setSeatNumber('OOP001')}
+          >
+            OOP001
+          </span> 
+          {' '}or{' '}
+          <span 
+            className="font-mono text-primary cursor-pointer hover:underline" 
+            onClick={() => setSeatNumber('OOP002')}
+          >
+            OOP002
           </span>
         </p>
       </CardContent>
