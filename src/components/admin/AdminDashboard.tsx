@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label';
 
 export function AdminDashboard() {
   const { isAuthenticated, login, logout, error } = useAdminAuth();
-  const { results, addResult, updateResult, deleteResult, clearAllResults, importFromCSV, exportToCSV, generateSampleCSV, getStatistics } = useExamResults();
+  const { results, addResult, updateResult, deleteResult, clearAllResults, importFromCSV, exportToCSV, generateSampleCSV, loadDemoData, getStatistics } = useExamResults();
   const { getFullDateTime, getISODate } = useCurrentDate();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -464,6 +464,14 @@ export function AdminDashboard() {
                 <Button variant="outline" className="w-full justify-start gap-2" onClick={handleGenerateSampleCSV}>
                   <RefreshCw className="w-4 h-4" />
                   Generate Sample CSV (30 students) {encryptExports && '(Encrypted)'}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-2 border-primary/50 text-primary hover:bg-primary/10" 
+                  onClick={() => { loadDemoData(100); toast.success('Loaded 100 demo students!'); setShowConfetti(true); setTimeout(() => setShowConfetti(false), 100); }}
+                >
+                  <Users className="w-4 h-4" />
+                  Load Demo Data (100 Students)
                 </Button>
               </CardContent>
             </Card>

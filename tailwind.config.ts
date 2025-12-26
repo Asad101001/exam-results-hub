@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Space Grotesk", "system-ui", "sans-serif"],
+        display: ["Space Grotesk", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -99,8 +99,8 @@ export default {
           to: { transform: "translateX(0)" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.2)" },
-          "50%": { boxShadow: "0 0 35px hsl(var(--primary) / 0.35)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(var(--primary) / 0.5)" },
         },
         shimmer: {
           from: { backgroundPosition: "200% 0" },
@@ -108,7 +108,7 @@ export default {
         },
         float: {
           "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-6px)" },
+          "50%": { transform: "translateY(-8px)" },
         },
         "spin-slow": {
           from: { transform: "rotate(0deg)" },
@@ -123,12 +123,13 @@ export default {
         "slide-in": "slide-in 0.3s ease-out",
         "pulse-glow": "pulse-glow 2.5s ease-in-out infinite",
         shimmer: "shimmer 2.5s linear infinite",
-        float: "float 3s ease-in-out infinite",
+        float: "float 4s ease-in-out infinite",
         "spin-slow": "spin-slow 8s linear infinite",
       },
       boxShadow: {
         glow: "var(--shadow-glow)",
         soft: "var(--shadow-md)",
+        glass: "var(--shadow-glass)",
       },
     },
   },
