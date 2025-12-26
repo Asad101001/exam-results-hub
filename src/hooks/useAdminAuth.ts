@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
-// Password hash (SHA-256 of 'oopsAdmin2024')
-const ADMIN_PASSWORD_HASH = 'oopsAdmin2024';
+const AUTH_PASSWORD = 'password123';
 const AUTH_KEY = 'admin-authenticated';
 
 export function useAdminAuth() {
@@ -10,8 +9,7 @@ export function useAdminAuth() {
   const [error, setError] = useState<string | null>(null);
 
   const login = useCallback((password: string): boolean => {
-    // Simple password check - in production, use proper hashing
-    if (password === ADMIN_PASSWORD_HASH) {
+    if (password === AUTH_PASSWORD) {
       setIsAuthenticated(true);
       setError(null);
       return true;

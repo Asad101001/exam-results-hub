@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 export function AdminDashboard() {
   const { isAuthenticated, login, logout, error } = useAdminAuth();
@@ -235,7 +236,7 @@ export function AdminDashboard() {
                 </Card>
               </div>
 
-              {/* Question-wise Performance */}
+              {/* Question-wise Performance Chart */}
               <Card className="agent-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -244,26 +245,37 @@ export function AdminDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-7 gap-3">
-                    {stats.questionStats.map((q) => (
-                      <div key={q.questionNumber} className="p-4 bg-muted/50 rounded-lg text-center hover:bg-muted transition-colors cursor-default">
-                        <p className="text-xs text-muted-foreground font-medium">Q{q.questionNumber}</p>
-                        <p className="text-xl font-bold mt-1">{q.avgMarks}</p>
-                        <p className="text-xs text-muted-foreground">/{q.maxMarks}</p>
-                        <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full gradient-primary rounded-full transition-all"
-                            style={{ width: `${q.avgPercentage}%` }}
-                          />
-                        </div>
-                        <p className="text-xs mt-1 font-medium">{q.avgPercentage}%</p>
-                      </div>
-                    ))}
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={stats.questionStats.map(q => ({
+                        name: `Q${q.questionNumber}`,
+                        avg: q.avgMarks,
+                        max: q.maxMarks,
+                        percentage: q.avgPercentage
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(0 0% 20%)" />
+                        <XAxis dataKey="name" stroke="hsl(0 0% 60%)" fontSize={12} />
+                        <YAxis stroke="hsl(0 0% 60%)" fontSize={12} />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(0 0% 10%)', 
+                            border: '1px solid hsl(0 0% 20%)',
+                            borderRadius: '8px',
+                            color: 'hsl(0 0% 95%)'
+                          }}
+                          formatter={(value: number, name: string) => [
+                            name === 'avg' ? `${value} marks` : `${value}%`,
+                            name === 'avg' ? 'Average' : 'Percentage'
+                          ]}
+                        />
+                        <Bar dataKey="avg" fill="hsl(0 72% 51%)" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Grade Distribution */}
+              {/* Grade Distribution Chart */}
               <Card className="agent-card">
                 <CardHeader>
                   <CardTitle>
@@ -271,20 +283,79 @@ export function AdminDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-4">
-                    {['A+', 'A', 'B+', 'B', 'C', 'D', 'F'].map((grade) => {
-                      const count = stats.gradeDistribution[grade] || 0;
-                      const percentage = stats.totalStudents > 0 ? Math.round((count / stats.totalStudents) * 100) : 0;
-                      return (
-                        <div key={grade} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg min-w-[120px] cursor-default">
-                          <GradeDisplay grade={grade} size="sm" />
-                          <div>
-                            <span className="font-bold">{count}</span>
-                            <span className="text-xs text-muted-foreground ml-1">({percentage}%)</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Pie Chart */}
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={['A+', 'A', 'B+', 'B', 'C', 'D', 'F'].map((grade, index) => ({
+                              name: grade,
+                              value: stats.gradeDistribution[grade] || 0,
+                              color: [
+                                'hsl(142 72% 42%)',
+                                'hsl(142 60% 50%)',
+                                'hsl(200 70% 50%)',
+                                'hsl(200 50% 60%)',
+                                'hsl(38 92% 50%)',
+                                'hsl(25 80% 50%)',
+                                'hsl(0 72% 51%)'
+                              ][index]
+                            })).filter(d => d.value > 0)}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={40}
+                            outerRadius={80}
+                            paddingAngle={2}
+                            dataKey="value"
+                          >
+                            {['A+', 'A', 'B+', 'B', 'C', 'D', 'F'].map((grade, index) => (
+                              <Cell 
+                                key={`cell-${index}`} 
+                                fill={[
+                                  'hsl(142 72% 42%)',
+                                  'hsl(142 60% 50%)',
+                                  'hsl(200 70% 50%)',
+                                  'hsl(200 50% 60%)',
+                                  'hsl(38 92% 50%)',
+                                  'hsl(25 80% 50%)',
+                                  'hsl(0 72% 51%)'
+                                ][index]} 
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'hsl(0 0% 10%)', 
+                              border: '1px solid hsl(0 0% 20%)',
+                              borderRadius: '8px',
+                              color: 'hsl(0 0% 95%)'
+                            }}
+                            formatter={(value: number) => [`${value} students`, 'Count']}
+                          />
+                          <Legend 
+                            wrapperStyle={{ color: 'hsl(0 0% 60%)' }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    
+                    {/* Grade List */}
+                    <div className="flex flex-wrap gap-3 content-start">
+                      {['A+', 'A', 'B+', 'B', 'C', 'D', 'F'].map((grade) => {
+                        const count = stats.gradeDistribution[grade] || 0;
+                        const percentage = stats.totalStudents > 0 ? Math.round((count / stats.totalStudents) * 100) : 0;
+                        return (
+                          <div key={grade} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg min-w-[110px] cursor-default hover:bg-muted/70 transition-colors">
+                            <GradeDisplay grade={grade} size="sm" />
+                            <div>
+                              <span className="font-bold">{count}</span>
+                              <span className="text-xs text-muted-foreground ml-1">({percentage}%)</span>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
