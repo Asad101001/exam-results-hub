@@ -26,22 +26,22 @@ export function AdminLogin({ onLogin, error }: AdminLoginProps) {
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center animate-fade-in">
-      <Card className="w-full max-w-md agent-card border-0">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto p-4 gradient-primary rounded-2xl w-fit shadow-sm">
+      <Card className="w-full max-w-md glass-card border-primary/20">
+        <CardHeader className="text-center space-y-4 pb-2">
+          <div className="mx-auto p-5 gradient-primary rounded-2xl w-fit shadow-glow">
             <Shield className="w-10 h-10 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl">Admin Access</CardTitle>
+            <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
             <CardDescription className="mt-2">
               Enter the portal password to access the control center
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="pt-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <Alert variant="destructive" className="border-destructive/50">
+              <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
@@ -54,14 +54,14 @@ export function AdminLogin({ onLogin, error }: AdminLoginProps) {
                 placeholder="Enter admin password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10"
+                className="pl-10 py-6 bg-secondary/50 border-border/50 focus:border-primary/50 focus:ring-primary/30"
                 required
               />
             </div>
             
             <Button 
               type="submit" 
-              className="w-full gradient-primary text-primary-foreground"
+              className="w-full py-6 gradient-primary text-primary-foreground font-semibold shadow-glow"
               disabled={isLoading || !password}
             >
               {isLoading ? (
@@ -75,8 +75,8 @@ export function AdminLogin({ onLogin, error }: AdminLoginProps) {
             </Button>
           </form>
           
-          <p className="text-xs text-muted-foreground text-center mt-4">
-            Contact your department administrator if you've forgotten the password.
+          <p className="text-xs text-muted-foreground text-center mt-6 pt-4 border-t border-border/30">
+            Contact your department administrator for access credentials.
           </p>
         </CardContent>
       </Card>

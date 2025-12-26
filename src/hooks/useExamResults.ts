@@ -219,9 +219,30 @@ export function useExamResults() {
     return csvContent;
   }, [results]);
 
+  const DEMO_NAMES = [
+    'Amit Kumar', 'Priya Singh', 'Rohit Verma', 'Sneha Gupta', 'Vikram Patel', 
+    'Anjali Sharma', 'Karthik Nair', 'Pooja Reddy', 'Arjun Das', 'Neha Joshi',
+    'Siddharth Rao', 'Kavya Menon', 'Rahul Saxena', 'Divya Pillai', 'Manish Tiwari',
+    'Shruti Iyer', 'Akash Pandey', 'Riya Kapoor', 'Deepak Mishra', 'Megha Choudhury',
+    'Nikhil Agarwal', 'Tanvi Bhatt', 'Varun Khanna', 'Ishita Sen', 'Gaurav Malhotra',
+    'Pallavi Jain', 'Rohan Bose', 'Simran Kaur', 'Aditya Hegde', 'Kriti Banerjee',
+    'Abhishek Nair', 'Swati Kulkarni', 'Pranav Desai', 'Meera Krishnan', 'Rajesh Sharma',
+    'Anita Rao', 'Suresh Menon', 'Lakshmi Pillai', 'Harish Kumar', 'Geeta Iyer',
+    'Mohan Reddy', 'Sunita Patil', 'Vijay Hegde', 'Rekha Das', 'Arun Nair',
+    'Kamala Devi', 'Prakash Joshi', 'Savita Rani', 'Dinesh Gupta', 'Usha Sharma',
+    'Ramesh Verma', 'Suman Patel', 'Girish Bhat', 'Asha Murthy', 'Naveen Kumar',
+    'Deepa Menon', 'Vinod Shetty', 'Maya Rao', 'Sunil Kamat', 'Hema Naik',
+    'Ashok Pai', 'Radha Krishnan', 'Ganesh Nayak', 'Saroja Acharya', 'Mahesh Shenoy',
+    'Janaki Iyengar', 'Satish Kamath', 'Vani Bhat', 'Krishna Murthy', 'Padma Rani',
+    'Naresh Shetty', 'Bharati Pai', 'Umesh Nair', 'Saraswati Iyer', 'Shyam Rao',
+    'Veena Kumar', 'Gopal Hegde', 'Sudha Sharma', 'Vishnu Nayak', 'Indira Devi',
+    'Raman Pillai', 'Gowri Menon', 'Kiran Patil', 'Anupama Das', 'Raghav Murthy',
+    'Shalini Acharya', 'Bhaskar Shenoy', 'Nandini Iyengar', 'Venkat Kamath', 'Parvati Bhat',
+    'Shekhar Nair', 'Lalitha Rao', 'Ramakrishna Shetty', 'Gayatri Pai', 'Shankar Murthy',
+    'Bhavani Kumar', 'Narayan Hegde', 'Sharada Sharma', 'Srinivas Nayak', 'Varalakshmi Devi'
+  ];
+
   const generateSampleCSV = useCallback((count: number = 30, encrypted: boolean = false) => {
-    const names = ['Amit Kumar', 'Priya Singh', 'Rohit Verma', 'Sneha Gupta', 'Vikram Patel', 'Anjali Sharma', 'Karthik Nair', 'Pooja Reddy', 'Arjun Das', 'Neha Joshi', 'Siddharth Rao', 'Kavya Menon', 'Rahul Saxena', 'Divya Pillai', 'Manish Tiwari', 'Shruti Iyer', 'Akash Pandey', 'Riya Kapoor', 'Deepak Mishra', 'Megha Choudhury', 'Nikhil Agarwal', 'Tanvi Bhatt', 'Varun Khanna', 'Ishita Sen', 'Gaurav Malhotra', 'Pallavi Jain', 'Rohan Bose', 'Simran Kaur', 'Aditya Hegde', 'Kriti Banerjee'];
-    
     const headers = ['SeatNumber', 'Name', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Semester', 'Rank', 'Remarks', 'Teacher', 'Date'];
     
     const rows = Array.from({ length: count }, (_, i) => {
@@ -238,7 +259,7 @@ export function useExamResults() {
       
       return [
         `OOP${String(i + 3).padStart(3, '0')}`,
-        names[i % names.length],
+        DEMO_NAMES[i % DEMO_NAMES.length],
         q1, q2, q3, q4, q5, q6, q7,
         semester,
         '',
@@ -256,6 +277,56 @@ export function useExamResults() {
     
     return csvContent;
   }, []);
+
+  // Load 100-student demo data directly into state
+  const loadDemoData = useCallback((count: number = 100) => {
+    const demoResults: ExamResult[] = Array.from({ length: count }, (_, i) => {
+      const q1 = Math.floor(Math.random() * 11);
+      const q2 = Math.floor(Math.random() * 11);
+      const q3 = Math.floor(Math.random() * 11);
+      const q4 = Math.floor(Math.random() * 7);
+      const q5 = Math.floor(Math.random() * 11);
+      const q6 = Math.floor(Math.random() * 11);
+      const q7 = Math.floor(Math.random() * 15);
+      const examMarks = q1 + q2 + q3 + q4 + q5 + q6 + q7;
+      const internal = Math.floor(Math.random() * 31);
+      const semesterMarks = Math.min(Math.round(examMarks * 100 / 70) + internal, 100);
+      const percentage = semesterMarks;
+
+      return {
+        id: crypto.randomUUID(),
+        seatNumber: `OOP${String(i + 1).padStart(3, '0')}`,
+        studentName: DEMO_NAMES[i % DEMO_NAMES.length],
+        examName: 'OOPs Mid-Semester Examination 2024',
+        examDate: new Date().toISOString().split('T')[0],
+        subject: 'Object Oriented Programming',
+        questions: [
+          { questionNumber: 1, marksObtained: q1, maxMarks: 10 },
+          { questionNumber: 2, marksObtained: q2, maxMarks: 10 },
+          { questionNumber: 3, marksObtained: q3, maxMarks: 10 },
+          { questionNumber: 4, marksObtained: q4, maxMarks: 6 },
+          { questionNumber: 5, marksObtained: q5, maxMarks: 10 },
+          { questionNumber: 6, marksObtained: q6, maxMarks: 10 },
+          { questionNumber: 7, marksObtained: q7, maxMarks: 14 },
+        ],
+        examMarks,
+        semesterMarks,
+        percentage,
+        grade: calculateGrade(percentage),
+        teacher: {
+          name: 'Dr. Priya Mehta',
+          department: 'Computer Science',
+          email: 'priya.mehta@university.edu',
+          designation: 'Associate Professor',
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    setResults(demoResults);
+    return count;
+  }, [setResults]);
 
   // Summary statistics for admin
   const getStatistics = useCallback(() => {
@@ -308,6 +379,7 @@ export function useExamResults() {
     importFromCSV,
     exportToCSV,
     generateSampleCSV,
+    loadDemoData,
     getStatistics,
   };
 }

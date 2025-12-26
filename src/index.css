@@ -1,72 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Agent-inspired design system - Midnight Forest & Emerald (Light Mode Only) */
+/* Obsidian Crimson - Black & Red with iOS 26 Liquid Glass Morphism */
 
 @layer base {
   :root {
-    --background: 160 15% 96%;
-    --foreground: 160 30% 10%;
+    --background: 0 0% 4%;
+    --foreground: 0 0% 95%;
 
-    --card: 160 12% 99%;
-    --card-foreground: 160 30% 10%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 160 12% 99%;
-    --popover-foreground: 160 30% 10%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 160 60% 38%;
-    --primary-foreground: 160 10% 98%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 10% 92%;
-    --secondary-foreground: 160 30% 10%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 160 8% 88%;
-    --muted-foreground: 160 15% 40%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 42 90% 55%;
-    --accent-foreground: 160 30% 10%;
+    --accent: 0 85% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 160 10% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 145 60% 40%;
-    --success-foreground: 160 10% 98%;
+    --success: 142 72% 42%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 35 85% 52%;
-    --warning-foreground: 160 30% 10%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 10%;
 
-    --border: 160 12% 85%;
-    --input: 160 12% 85%;
-    --ring: 160 60% 38%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 0 72% 51%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Agent-style gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(160 60% 38%) 0%, hsl(145 55% 42%) 50%, hsl(130 50% 45%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(42 90% 55%) 0%, hsl(38 85% 50%) 100%);
-    --gradient-surface: linear-gradient(180deg, hsl(160 15% 96%) 0%, hsl(160 12% 93%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(160 60% 38% / 0.15) 0%, transparent 70%);
-    --gradient-card: linear-gradient(145deg, hsl(160 12% 99%) 0%, hsl(160 10% 97%) 100%);
-    --gradient-fun: linear-gradient(135deg, hsl(160 60% 38%) 0%, hsl(42 90% 55%) 100%);
+    /* Liquid Glass Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 72% 51%) 0%, hsl(350 80% 45%) 50%, hsl(0 65% 40%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(0 85% 60%) 0%, hsl(15 80% 55%) 100%);
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 5%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(0 72% 51% / 0.15) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 10% / 0.7) 0%, hsl(0 0% 6% / 0.8) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.08) 0%, hsl(0 0% 100% / 0.02) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(160 30% 10% / 0.04);
-    --shadow-md: 0 4px 12px -2px hsl(160 30% 10% / 0.08);
-    --shadow-lg: 0 12px 24px -4px hsl(160 30% 10% / 0.12);
-    --shadow-glow: 0 0 30px hsl(160 60% 38% / 0.2);
-    --shadow-inner: inset 0 2px 4px 0 hsl(160 30% 10% / 0.05);
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 16px -2px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 16px 48px -8px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px hsl(0 72% 51% / 0.3);
+    --shadow-inner: inset 0 2px 4px 0 hsl(0 0% 0% / 0.2);
+    --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.4), inset 0 1px 0 hsl(0 0% 100% / 0.1);
 
-    --sidebar-background: 160 12% 98%;
-    --sidebar-foreground: 160 25% 15%;
-    --sidebar-primary: 160 60% 38%;
-    --sidebar-primary-foreground: 160 10% 98%;
-    --sidebar-accent: 160 10% 94%;
-    --sidebar-accent-foreground: 160 30% 10%;
-    --sidebar-border: 160 12% 88%;
-    --sidebar-ring: 160 60% 38%;
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 72% 51%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 0 72% 51%;
   }
 }
 
@@ -113,8 +114,33 @@
     box-shadow: var(--shadow-inner);
   }
 
+  /* iOS 26 Liquid Glass Effect */
   .glass {
-    @apply bg-card/85 backdrop-blur-xl;
+    background: linear-gradient(135deg, hsl(0 0% 100% / 0.1) 0%, hsl(0 0% 100% / 0.03) 100%);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+    box-shadow: 
+      0 8px 32px hsl(0 0% 0% / 0.3),
+      inset 0 1px 0 hsl(0 0% 100% / 0.1),
+      inset 0 -1px 0 hsl(0 0% 0% / 0.1);
+  }
+
+  .glass-subtle {
+    background: hsl(0 0% 100% / 0.05);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+  }
+
+  .glass-card {
+    background: linear-gradient(145deg, hsl(0 0% 12% / 0.6) 0%, hsl(0 0% 8% / 0.8) 100%);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow: 
+      0 4px 24px hsl(0 0% 0% / 0.3),
+      inset 0 1px 0 hsl(0 0% 100% / 0.06);
   }
 
   .text-gradient {
@@ -123,7 +149,7 @@
   }
 
   .agent-card {
-    @apply bg-card border border-border/60 shadow-sm hover:shadow-md transition-all duration-200;
+    @apply glass-card rounded-xl;
   }
 
   .status-pulse {
@@ -131,12 +157,26 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-200;
+    @apply transition-all duration-300;
   }
 
   .hover-lift:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.4), 0 0 20px hsl(0 72% 51% / 0.2);
+  }
+
+  /* Glow effects */
+  .glow-sm {
+    box-shadow: 0 0 15px hsl(0 72% 51% / 0.3);
+  }
+
+  .glow-md {
+    box-shadow: 0 0 30px hsl(0 72% 51% / 0.4);
+  }
+
+  .border-glow {
+    border: 1px solid hsl(0 72% 51% / 0.5);
+    box-shadow: 0 0 20px hsl(0 72% 51% / 0.2), inset 0 0 20px hsl(0 72% 51% / 0.05);
   }
 }
 
@@ -150,6 +190,45 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+  animation: fade-in 0.4s ease-out;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(0 0% 8%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(0 0% 25%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0 72% 51% / 0.6);
 }
